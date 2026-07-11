@@ -1,21 +1,19 @@
-# Every 30 minutes from 8:00 to 20:00, run one scan
 $TaskName = "AutoGreen-Daily"
-$ScriptPath = "D:\auto\daily-run.bat"
+$XmlPath = "D:\auto\AutoGreen-Daily.xml"
 
-if (-not (Test-Path $ScriptPath)) {
-    Write-Error "Missing $ScriptPath"
+if (-not (Test-Path $XmlPath)) {
+    Write-Error "Missing $XmlPath"
     exit 1
 }
 
 schtasks /Delete /TN $TaskName /F 2>$null | Out-Null
-
-schtasks /Create /TN $TaskName /TR $ScriptPath /SC DAILY /ST 08:00 /RI 30 /DU 12:00 /F | Out-Null
+schtasks /Create /TN $TaskName /XML $XmlPath /F | Out-Null
 
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to create scheduled task"
+    Write-Error "Failed to create task"
     exit 1
 }
 
 Write-Host "[OK] Task created: $TaskName"
-Write-Host "     Scan every 30 min from 8:00 to 20:00"
-Write-Host "     Check: taskschd.msc -> $TaskName"
+Write-Host "     8:00-20:00 every 30 min, battery OK, catch up when PC turns on"
+Write-Host "     NOTE: must be logged in (screen lock is OK, but not powered off)"
